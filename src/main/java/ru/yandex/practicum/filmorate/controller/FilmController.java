@@ -20,7 +20,7 @@ public class FilmController {
 
     private final Map<Integer, Film> films = new HashMap<>();
 
-    //private static int filmIdGen = 0;
+    private static int filmIdGen = 0;
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
@@ -33,10 +33,9 @@ public class FilmController {
 
         if (isValidFilm(film)) {
 
-            //int currId = ++filmIdGen;
-            //film.setId(currId);
-            //films.put(currId, film);
-            films.put(film.getId(), film);
+            int currId = ++filmIdGen;
+            film.setId(currId);
+            films.put(currId, film);
             log.info("Новый фильм с названием: " + film.getName() + " создан");
         }
         return film;
@@ -49,7 +48,7 @@ public class FilmController {
         log.info("PUT-запрос на обновление фильма с id={}", film.getId());
 
         if (!films.containsKey(film.getId())) {
-            create(film);
+            throw new ValidationException("Фильм с таким id не найден");
         }
 
         if (isValidFilm(film)) {
@@ -76,7 +75,7 @@ public class FilmController {
         if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
             throw new ValidationException("Некорректная дата релиза фильма: " + film.getReleaseDate());
         }
-        if (film.getDuration().isZero()) {
+        if (film.getDuration() <= 0) {
             throw new ValidationException("Продолжительность должна быть положительной");
         }
         return true;

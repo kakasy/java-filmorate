@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.validator.DateRelease;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
-import java.time.Duration;
 import java.time.LocalDate;
 
 /**
@@ -34,5 +33,5 @@ public class Film {
 
     @Positive
     @NotNull
-    private Duration duration;
+    private int duration;
 }

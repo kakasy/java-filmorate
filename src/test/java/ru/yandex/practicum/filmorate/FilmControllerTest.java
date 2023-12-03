@@ -6,7 +6,6 @@ import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.time.Duration;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -28,7 +27,7 @@ public class FilmControllerTest {
                         "полная увлекательных приключений, резко меняется, " +
                         "когда его заклятый враг капитан Барбосса похищает корабль Джека Черную Жемчужину...")
                 .releaseDate(LocalDate.of(2003,6,28))
-                .duration(Duration.ofHours(2).plus(Duration.ofMinutes(43)))
+                .duration(203)
                 .build();
 
     }
@@ -75,7 +74,7 @@ public class FilmControllerTest {
     // должна быть выброшена ошибка валидации, когда длительность фильма равна нулю
     @Test
     public void shouldNotCreateFilmWhenFilmDurationIsZero() {
-        film.setDuration(Duration.ZERO);
+        film.setDuration(0);
         assertThrows(ValidationException.class, () -> filmController.create(film));
         assertEquals(0, filmController.getAll().size(), "Размер списка фильмов должен быть равен 0");
     }

@@ -19,7 +19,7 @@ public class UserController {
 
     private final Map<Integer, User> users = new HashMap<>();
 
-    //private static int userIdGen = 0;
+    private static int userIdGen = 0;
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
@@ -31,13 +31,10 @@ public class UserController {
         }
 
         if (isValidUser(user)) {
-            if (user.getName().isEmpty()) {
-                user.setName(user.getLogin());
-            }
 
-            //int currId = ++userIdGen;
-            //user.setId(currId);
-            //users.put(currId, user);
+            int currId = ++userIdGen;
+            user.setId(currId);
+            users.put(currId, user);
             users.put(user.getId(), user);
 
             log.info("Новый пользователь с логином: " + "'" + user.getLogin() + "'" + " создан");
@@ -53,13 +50,10 @@ public class UserController {
         log.info("PUT-запрос на обновление пользователя с id={}", user.getId());
 
         if (!users.containsKey(user.getId())) {
-            create(user);
+            throw new ValidationException("Пользователь с таким id не найден");
         }
 
         if (isValidUser(user)) {
-            if (user.getName().isEmpty()) {
-                user.setName(user.getLogin());
-            }
             users.put(user.getId(), user);
             log.info("Пользователь с id={} обновлен", user.getId());
         }
@@ -83,6 +77,9 @@ public class UserController {
         }
         if (user.getBirthday().isAfter(LocalDate.now())) {
             throw new ValidationException("Дата рождения не должна быть в будущем");
+        }
+        if (user.getName() == null || user.getName().isEmpty() || user.getName().isBlank()) {
+            user.setName(user.getLogin());
         }
         return true;
     }
