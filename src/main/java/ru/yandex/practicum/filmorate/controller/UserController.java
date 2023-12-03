@@ -31,7 +31,7 @@ public class UserController {
         }
 
         if (isValidUser(user)) {
-            if(user.getName().isEmpty()) {
+            if (user.getName().isEmpty()) {
                 user.setName(user.getLogin());
             }
 
@@ -56,7 +56,7 @@ public class UserController {
         }
 
         if (isValidUser(user)) {
-            if(user.getName().isEmpty()) {
+            if (user.getName().isEmpty()) {
                 user.setName(user.getLogin());
             }
             users.put(user.getId(), user);
