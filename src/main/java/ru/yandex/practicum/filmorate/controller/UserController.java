@@ -19,7 +19,7 @@ public class UserController {
 
     private final Map<Integer, User> users = new HashMap<>();
 
-    private static int userIdGen = 0;
+    //private static int userIdGen = 0;
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
@@ -35,9 +35,10 @@ public class UserController {
                 user.setName(user.getLogin());
             }
 
-            int currId = ++userIdGen;
-            user.setId(currId);
-            users.put(currId, user);
+            //int currId = ++userIdGen;
+            //user.setId(currId);
+            //users.put(currId, user);
+            users.put(user.getId(), user);
 
             log.info("Новый пользователь с логином: " + "'" + user.getLogin() + "'" + " создан");
 

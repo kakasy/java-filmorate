@@ -20,7 +20,7 @@ public class FilmController {
 
     private final Map<Integer, Film> films = new HashMap<>();
 
-    private static int filmIdGen = 0;
+    //private static int filmIdGen = 0;
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
@@ -33,9 +33,10 @@ public class FilmController {
 
         if (isValidFilm(film)) {
 
-            int currId = ++filmIdGen;
-            film.setId(currId);
-            films.put(currId, film);
+            //int currId = ++filmIdGen;
+            //film.setId(currId);
+            //films.put(currId, film);
+            films.put(film.getId(), film);
             log.info("Новый фильм с названием: " + film.getName() + " создан");
         }
         return film;
