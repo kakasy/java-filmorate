@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
 
@@ -14,11 +17,15 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class UserControllerTest {
 
     private UserController userController;
+    private UserStorage userStorage;
+
     private User user;
+
 
     @BeforeEach
     public void setUp() {
-        userController = new UserController();
+        userStorage = new InMemoryUserStorage();
+        userController = new UserController(userStorage, new UserService(userStorage));
 
         user = User.builder()
                 .email("some_dude@yandex.ru")
@@ -29,7 +36,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void shouldCreateUserAllFieldsAreCorrect() {
+    void testShouldCreateUserAllFieldsAreCorrect() {
 
         User mikey = userController.create(user);
 
@@ -40,7 +47,7 @@ public class UserControllerTest {
 
     // ошибка валидации если email пустой
     @Test
-    public void shouldNotCreateUserIfEmailIsEmpty() {
+    void testShouldNotCreateUserIfEmailIsEmpty() {
 
         user.setEmail("");
         assertThrows(ValidationException.class, () -> userController.create(user));
@@ -49,7 +56,7 @@ public class UserControllerTest {
 
     // ошибка валидации если login пустой
     @Test
-    public void shouldNotCreateUserIfLoginIsEmpty() {
+    void testShouldNotCreateUserIfLoginIsEmpty() {
 
         user.setLogin("");
         assertThrows(ValidationException.class, () -> userController.create(user));
@@ -58,7 +65,7 @@ public class UserControllerTest {
 
     // ошибка валидации если login содержит пробелы
     @Test
-    public void shouldNoAddUserWhenUserLoginIsContainsSpaces() {
+    void testShouldNoAddUserWhenUserLoginIsContainsSpaces() {
         user.setLogin("dude 01");
         assertThrows(ValidationException.class, () -> userController.create(user));
         assertEquals(0, userController.getAll().size(), "Список пользователей должен быть пустым");
@@ -66,7 +73,7 @@ public class UserControllerTest {
 
     // при пустом имени должен отображаться логин
     @Test
-    public void shouldCreateUserWithLoginValueInNameFieldIfNameIsEmpty() {
+    void testShouldCreateUserWithLoginValueInNameFieldIfNameIsEmpty() {
 
         user.setName("");
 
@@ -78,7 +85,7 @@ public class UserControllerTest {
 
     // ошибка валидации если birthday в будущем
     @Test
-    public void shouldNotCreateUserIfBirthdayIsAboveNow() {
+    void testShouldNotCreateUserIfBirthdayIsAboveNow() {
 
         user.setBirthday(LocalDate.of(2991, 1, 25));
         assertThrows(ValidationException.class, () -> userController.create(user));
