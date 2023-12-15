@@ -58,7 +58,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
         Film filmToDelete = films.remove(id);
 
-        if(filmToDelete == null) {
+        if (filmToDelete == null) {
             throw new ValidationException("Фильма с таким id не существует");
         }
 
