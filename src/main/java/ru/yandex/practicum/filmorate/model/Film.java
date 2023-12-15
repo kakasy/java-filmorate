@@ -1,8 +1,7 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 import ru.yandex.practicum.filmorate.validator.DateRelease;
 
@@ -10,12 +9,13 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.LocalDate;
+import java.util.Set;
 
 /**
  * Film.
  */
-@Getter
-@Setter
+
+@Data
 @Builder
 public class Film {
 
@@ -34,4 +34,6 @@ public class Film {
     @Positive
     @NotNull
     private int duration;
+
+    private Set<Integer> likes;
 }
