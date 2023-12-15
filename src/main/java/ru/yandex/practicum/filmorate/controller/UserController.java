@@ -3,45 +3,32 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import javax.validation.Valid;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
 @Slf4j
 public class UserController {
 
-    private final Map<Integer, User> users = new HashMap<>();
+    private final UserStorage userStorage;
+    private final UserService userService;
 
-    private static int userIdGen = 0;
+    public UserController(UserStorage userStorage, UserService userService) {
+
+        this.userStorage = userStorage;
+        this.userService = userService;
+    }
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
 
         log.info("POST-запрос на эндпоинт /users");
 
-        if (users.containsKey(user.getId())) {
-            throw new ValidationException("Пользователь с таким id уже создан");
-        }
-
-        if (isValidUser(user)) {
-
-            int currId = ++userIdGen;
-            user.setId(currId);
-            users.put(currId, user);
-            users.put(user.getId(), user);
-
-            log.info("Новый пользователь с логином: " + "'" + user.getLogin() + "'" + " создан");
-
-        }
-
-        return user;
+        return userStorage.create(user);
     }
 
     @PutMapping
@@ -49,38 +36,51 @@ public class UserController {
 
         log.info("PUT-запрос на обновление пользователя с id={}", user.getId());
 
-        if (!users.containsKey(user.getId())) {
-            throw new ValidationException("Пользователь с таким id не найден");
-        }
-
-        if (isValidUser(user)) {
-            users.put(user.getId(), user);
-            log.info("Пользователь с id={} обновлен", user.getId());
-        }
-
-        return user;
+        return userStorage.update(user);
     }
 
     @GetMapping
     public List<User> getAll() {
 
-        return new ArrayList<>(users.values());
+        return userStorage.getAll();
     }
 
+    @PutMapping("/{id}/friends/{friendId}")
+    public void addFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
 
-    private boolean isValidUser(User user) {
-        if (user.getEmail().isEmpty()) {
-            throw new ValidationException("Email не должен быть пустым");
-        }
-        if (user.getLogin().isEmpty() || user.getLogin().contains(" ")) {
-            throw new ValidationException("Логин не должен быть пустым/содержать пробелы");
-        }
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            throw new ValidationException("Дата рождения не должна быть в будущем");
-        }
-        if (user.getName() == null || user.getName().isEmpty() || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
-        return true;
+        userService.addFriend(id, friendId);
+    }
+
+    @GetMapping("/{id}")
+    public User getUserById(@PathVariable Integer id) {
+
+        log.info("GET-запрос на эндпоинт /users/{id}");
+
+        return userStorage.getUserById(id);
+
+    }
+
+    @GetMapping("/{id}/friends")
+    public List<User> getUserFriends(@PathVariable Integer id) {
+
+        return userService.getFriends(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> getCommonFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
+
+        return userService.getCommonFriends(id, otherId);
+    }
+
+    @DeleteMapping("/user/{userId}")
+    public User delete(@PathVariable Integer userId) {
+
+        return userStorage.delete(userId);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void deleteFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
+
+        userService.deleteFriend(id, friendId);
     }
 }
