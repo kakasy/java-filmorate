@@ -10,9 +10,9 @@ public interface FilmStorage {
 
     Film create(Film film);
 
-    Film delete(Integer filmId);
+    Film delete(Long filmId);
 
-    Film getFilmById(Integer filmId);
+    Film getFilmById(Long filmId);
 
     List<Film> getAll();
 }
