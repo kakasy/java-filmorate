@@ -9,6 +9,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -19,7 +20,7 @@ import java.util.Set;
 @Builder
 public class Film {
 
-    private int id;
+    private Long id;
 
     @NotEmpty(message = "Название фильма не может быть пустым")
     private String name;
@@ -35,5 +36,17 @@ public class Film {
     @NotNull
     private int duration;
 
-    private Set<Integer> likes;
+    private Set<Long> likes;
+
+    public Film(Long id, String name, String description, LocalDate releaseDate, Integer duration, Set<Long> likes) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.likes = likes;
+        if (likes == null) {
+            this.likes = new HashSet<>();
+        }
+    }
 }

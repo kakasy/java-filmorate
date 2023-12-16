@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -12,7 +13,7 @@ import java.util.Set;
 @Builder
 public class User {
 
-    private int id;
+    private Long id;
 
     @NotNull
     @Email(message = "Введён некорректный адрес")
@@ -26,7 +27,17 @@ public class User {
     @NotNull
     @PastOrPresent(message = "День рождения не должен быть в будущем")
     private LocalDate birthday;
+    private Set<Long> friends;
 
-    private Set<Integer> friends;
-
+    public User(Long id, String email, String login, String name, LocalDate birthday, Set<Long> friends) {
+        this.id = id;
+        this.email = email;
+        this.login = login;
+        this.name = name;
+        this.birthday = birthday;
+        this.friends = friends;
+        if (friends == null) {
+            this.friends = new HashSet<>();
+        }
+    }
 }
