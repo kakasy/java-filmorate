@@ -78,7 +78,7 @@ public class FilmService {
                 throw new UserNotFoundException("Пользователь с id=" + userId + " не ставил лайк");
             }
         } else {
-            throw new FilmNotFoundException( "Фильма с указанным id=" + filmId +" не существует");
+            throw new FilmNotFoundException("Фильма с указанным id=" + filmId + " не существует");
         }
     }
 
