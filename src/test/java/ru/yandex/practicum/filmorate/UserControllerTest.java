@@ -17,15 +17,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class UserControllerTest {
 
     private UserController userController;
-    private UserStorage userStorage;
 
     private User user;
 
 
     @BeforeEach
     public void setUp() {
-        userStorage = new InMemoryUserStorage();
-        userController = new UserController(userStorage, new UserService(userStorage));
+        UserStorage userStorage = new InMemoryUserStorage();
+        userController = new UserController(new UserService(userStorage));
 
         user = User.builder()
                 .email("some_dude@yandex.ru")

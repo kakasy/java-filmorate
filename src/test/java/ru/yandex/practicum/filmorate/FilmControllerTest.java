@@ -19,16 +19,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class FilmControllerTest {
 
     private FilmController filmController;
-    private FilmStorage filmStorage;
-    private UserStorage userStorage;
     private Film film;
 
     @BeforeEach
     public void setUp() {
 
-        filmStorage = new InMemoryFilmStorage();
-        userStorage = new InMemoryUserStorage();
-        filmController = new FilmController(filmStorage, new FilmService(filmStorage, userStorage));
+        FilmStorage filmStorage = new InMemoryFilmStorage();
+        UserStorage userStorage = new InMemoryUserStorage();
+        filmController = new FilmController(new FilmService(filmStorage, userStorage));
 
         film = Film.builder()
                 .name("Пираты Карибского Моря: Проклятие Чёрной жемчужины")
