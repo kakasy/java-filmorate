@@ -16,9 +16,9 @@ import java.util.Map;
 @Slf4j
 public class InMemoryUserStorage implements UserStorage {
 
-    private final Map<Integer, User> users = new HashMap<>();
+    private final Map<Long, User> users = new HashMap<>();
 
-    private static int userIdGen = 0;
+    private static Long userIdGen = 0L;
 
     @Override
     public User create(User user) {
@@ -29,7 +29,7 @@ public class InMemoryUserStorage implements UserStorage {
 
         if (isValidUser(user)) {
 
-            int currId = ++userIdGen;
+            Long currId = ++userIdGen;
             user.setId(currId);
             users.put(currId, user);
             users.put(user.getId(), user);
@@ -44,8 +44,12 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User update(User user) {
 
+        if (user.getId() == null) {
+            throw new ValidationException("Аргумент пустой");
+        }
+
         if (!users.containsKey(user.getId())) {
-            throw new ValidationException("Пользователь с таким id не найден");
+            throw new UserNotFoundException("Пользователь с таким id не найден");
         }
 
         if (isValidUser(user)) {
@@ -57,7 +61,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User delete(Integer id) {
+    public User delete(Long id) {
 
         User userToDelete = users.remove(id);
 
@@ -76,13 +80,12 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User getUserById(Integer userId) {
+    public User getUserById(Long userId) {
 
-        User user = users.get(userId);
-        if (user == null) {
+        if (!users.containsKey(userId)) {
             throw new UserNotFoundException("Пользователь с id=" + userId + " не найден");
         }
-        return user;
+        return users.get(userId);
     }
 
     @Override
@@ -95,6 +98,9 @@ public class InMemoryUserStorage implements UserStorage {
     private boolean isValidUser(User user) {
         if (user.getEmail().isEmpty()) {
             throw new ValidationException("Email не должен быть пустым");
+        }
+        if (!user.getEmail().contains("@")) {
+            throw new ValidationException("Некорректный email: " + user.getEmail());
         }
         if (user.getLogin().isEmpty() || user.getLogin().contains(" ")) {
             throw new ValidationException("Логин не должен быть пустым/содержать пробелы");

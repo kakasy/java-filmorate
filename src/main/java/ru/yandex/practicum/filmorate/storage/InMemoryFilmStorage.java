@@ -16,15 +16,15 @@ import java.util.Map;
 @Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
 
-    private final Map<Integer, Film> films = new HashMap<>();
+    private final Map<Long, Film> films = new HashMap<>();
 
-    private static int filmIdGen = 0;
+    private static Long filmIdGen = 0L;
 
     @Override
     public Film update(Film film) {
 
         if (!films.containsKey(film.getId())) {
-            throw new ValidationException("Фильм с таким id не найден");
+            throw new FilmNotFoundException("Фильм с таким id=" + film.getId() + " не найден");
         }
 
         if (isValidFilm(film)) {
@@ -38,14 +38,13 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film create(Film film) {
 
-
         if (films.containsKey(film.getId())) {
             throw new ValidationException("Фильм с таким id уже создан");
         }
 
         if (isValidFilm(film)) {
 
-            int currId = ++filmIdGen;
+            Long currId = ++filmIdGen;
             film.setId(currId);
             films.put(currId, film);
             log.info("Новый фильм с названием: " + film.getName() + " создан");
@@ -54,7 +53,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film delete(Integer id) {
+    public Film delete(Long id) {
 
         Film filmToDelete = films.remove(id);
 
@@ -67,7 +66,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film getFilmById(Integer filmId) {
+    public Film getFilmById(Long filmId) {
 
         Film film = films.get(filmId);
         if (film == null) {
