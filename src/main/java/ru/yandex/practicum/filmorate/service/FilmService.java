@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
@@ -21,20 +23,50 @@ public class FilmService {
         this.userStorage = userStorage;
     }
 
-    public void addLike(Integer filmId, Integer userId) {
+
+    public Film update(Film film) {
+
+       return filmStorage.update(film);
+    }
+
+    public Film create(Film film) {
+
+        return filmStorage.create(film);
+    }
+
+    public Film delete(Long filmId) {
+
+        return filmStorage.delete(filmId);
+    }
+
+    public Film getFilmById(Long filmId) {
+
+        return filmStorage.getFilmById(filmId);
+    }
+
+    public List<Film> getAll() {
+
+        return filmStorage.getAll();
+    }
+
+    public void addLike(Long filmId, Long userId) {
 
         Film film = filmStorage.getFilmById(filmId);
         User user = userStorage.getUserById(userId);
 
-        if (film != null && user != null) {
-            film.getLikes().add(userId);
+        if (film != null) {
+            if (user != null) {
+                film.getLikes().add(userId);
+            } else {
+                throw new UserNotFoundException("Пользователя с id=" + userId + " не существует");
+            }
         } else {
-            throw new ValidationException("Фильма или пользователя с указанным id не существует");
+            throw new FilmNotFoundException("Фильма с id=" + filmId + " не существует");
         }
     }
 
 
-    public void deleteLike(Integer filmId, Integer userId) {
+    public void deleteLike(Long filmId, Long userId) {
 
         Film film = filmStorage.getFilmById(filmId);
         User user = userStorage.getUserById(userId);
@@ -43,12 +75,11 @@ public class FilmService {
             if (film.getLikes().contains(userId)) {
                 film.getLikes().remove(userId);
             } else {
-                throw new ValidationException("Пользователь с id=" + userId + " не ставил лайк");
+                throw new UserNotFoundException("Пользователь с id=" + userId + " не ставил лайк");
             }
         } else {
-            throw new ValidationException("Фильма или пользователя с указанным id не существует");
+            throw new FilmNotFoundException( "Фильма с указанным id=" + filmId +" не существует");
         }
-
     }
 
     public List<Film> getPopular(Integer count) {
