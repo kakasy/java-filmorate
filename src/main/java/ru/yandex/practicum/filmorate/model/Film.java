@@ -26,6 +26,7 @@ public class Film {
     private String name;
 
     @Length(message = "Максимальная длина названия - 200 символов", max = 200)
+    @NotNull
     private String description;
 
     @NotNull
@@ -36,17 +37,12 @@ public class Film {
     @NotNull
     private int duration;
 
-    private Set<Long> likes;
 
-    public Film(Long id, String name, String description, LocalDate releaseDate, Integer duration, Set<Long> likes) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.releaseDate = releaseDate;
-        this.duration = duration;
-        this.likes = likes;
-        if (likes == null) {
-            this.likes = new HashSet<>();
-        }
+    private final Set<Long> likes = new HashSet<>();
+
+
+    public int getCountLikes() {
+
+        return likes.size();
     }
 }
