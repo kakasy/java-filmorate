@@ -6,11 +6,7 @@ import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 @Slf4j
@@ -18,7 +14,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     private final Map<Long, Film> films = new HashMap<>();
 
-    private static Long filmIdGen = 0L;
+    private Long filmIdGen = 0L;
 
     @Override
     public Film update(Film film) {
@@ -27,10 +23,8 @@ public class InMemoryFilmStorage implements FilmStorage {
             throw new FilmNotFoundException("Фильм с таким id=" + film.getId() + " не найден");
         }
 
-        if (isValidFilm(film)) {
-            films.put(film.getId(), film);
-            log.info("Фильм с id={} обновлен", film.getId());
-        }
+        films.put(film.getId(), film);
+        log.info("Фильм с id={} обновлен", film.getId());
 
         return film;
     }
@@ -42,13 +36,11 @@ public class InMemoryFilmStorage implements FilmStorage {
             throw new ValidationException("Фильм с таким id уже создан");
         }
 
-        if (isValidFilm(film)) {
+        Long currId = ++filmIdGen;
+        film.setId(currId);
+        films.put(currId, film);
+        log.info("Новый фильм с названием: " + film.getName() + " создан");
 
-            Long currId = ++filmIdGen;
-            film.setId(currId);
-            films.put(currId, film);
-            log.info("Новый фильм с названием: " + film.getName() + " создан");
-        }
         return film;
     }
 
@@ -66,34 +58,14 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film getFilmById(Long filmId) {
+    public Optional<Film> getFilmById(Long filmId) {
 
-        Film film = films.get(filmId);
-        if (film == null) {
-            throw new FilmNotFoundException("Фильм с id=" + filmId + " не найден");
-        }
-        return film;
+        return Optional.ofNullable(films.get(filmId));
     }
 
     @Override
     public List<Film> getAll() {
 
         return new ArrayList<>(films.values());
-    }
-
-    private boolean isValidFilm(Film film) {
-        if (film.getName().isEmpty()) {
-            throw new ValidationException("Название фильма не должно быть пустым");
-        }
-        if ((film.getDescription().length()) > 200 || (film.getDescription().isEmpty())) {
-            throw new ValidationException("Описание фильма больше 200 символов или пустое ");
-        }
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            throw new ValidationException("Некорректная дата релиза фильма: " + film.getReleaseDate());
-        }
-        if (film.getDuration() <= 0) {
-            throw new ValidationException("Продолжительность должна быть положительной");
-        }
-        return true;
     }
 }

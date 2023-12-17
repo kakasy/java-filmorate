@@ -6,11 +6,7 @@ import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 @Slf4j
@@ -18,17 +14,14 @@ public class InMemoryUserStorage implements UserStorage {
 
     private final Map<Long, User> users = new HashMap<>();
 
-    private static Long userIdGen = 0L;
+    private Long userIdGen = 0L;
 
     @Override
     public User create(User user) {
 
         if (users.containsKey(user.getId())) {
             throw new ValidationException("Пользователь с таким id уже создан");
-        }
-
-        if (isValidUser(user)) {
-
+        } else {
             Long currId = ++userIdGen;
             user.setId(currId);
             users.put(currId, user);
@@ -36,28 +29,28 @@ public class InMemoryUserStorage implements UserStorage {
 
             log.info("Новый пользователь с логином: " + "'" + user.getLogin() + "'" + " создан");
 
+            return user;
         }
-
-        return user;
     }
 
     @Override
     public User update(User user) {
 
         if (user.getId() == null) {
+
             throw new ValidationException("Аргумент пустой");
-        }
 
-        if (!users.containsKey(user.getId())) {
+        } else if (!users.containsKey(user.getId())) {
+
             throw new UserNotFoundException("Пользователь с таким id не найден");
-        }
 
-        if (isValidUser(user)) {
+        } else {
+
             users.put(user.getId(), user);
             log.info("Пользователь с id={} обновлен", user.getId());
-        }
 
-        return user;
+            return user;
+        }
     }
 
     @Override
@@ -65,9 +58,6 @@ public class InMemoryUserStorage implements UserStorage {
 
         User userToDelete = users.remove(id);
 
-        if (userToDelete == null) {
-            throw new ValidationException("Пользователя с таким id не существует");
-        }
         if (!users.containsKey(id)) {
             throw new UserNotFoundException("Пользователь с id=" + id + " не найден");
         }
@@ -80,37 +70,14 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User getUserById(Long userId) {
+    public Optional<User> getUserById(Long userId) {
 
-        if (!users.containsKey(userId)) {
-            throw new UserNotFoundException("Пользователь с id=" + userId + " не найден");
-        }
-        return users.get(userId);
+        return Optional.ofNullable(users.get(userId));
     }
 
     @Override
     public List<User> getAll() {
 
         return new ArrayList<>(users.values());
-    }
-
-
-    private boolean isValidUser(User user) {
-        if (user.getEmail().isEmpty()) {
-            throw new ValidationException("Email не должен быть пустым");
-        }
-        if (!user.getEmail().contains("@")) {
-            throw new ValidationException("Некорректный email: " + user.getEmail());
-        }
-        if (user.getLogin().isEmpty() || user.getLogin().contains(" ")) {
-            throw new ValidationException("Логин не должен быть пустым/содержать пробелы");
-        }
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            throw new ValidationException("Дата рождения не должна быть в будущем");
-        }
-        if (user.getName() == null || user.getName().isEmpty() || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
-        return true;
     }
 }
