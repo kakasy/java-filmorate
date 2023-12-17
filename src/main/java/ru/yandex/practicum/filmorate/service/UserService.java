@@ -17,11 +17,6 @@ public class UserService {
 
     private final UserStorage userStorage;
 
-//    public UserService(UserStorage userStorage) {
-//
-//        this.userStorage = userStorage;
-//    }
-
     public User update(User user) {
 
         checkUserName(user);
@@ -43,11 +38,6 @@ public class UserService {
 
     public User getUserById(Long userId) {
 
-//        if (userStorage.getUserById(userId).isPresent()) {
-//            return userStorage.getUserById(userId).get();
-//        } else {
-//            throw new UserNotFoundException("Пользователь с id=" + userId + " не найден");
-//        }
         return userStorage.getUserById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с id=" + userId + " не найден"));
     }
@@ -59,8 +49,6 @@ public class UserService {
 
     public void addFriend(Long userId, Long friendId) {
 
-        //User user = userStorage.getUserById(userId);
-        //User friend = userStorage.getUserById(friendId);
         User user = getUserById(userId);
         User friend = getUserById(friendId);
 
@@ -71,8 +59,6 @@ public class UserService {
 
     public void deleteFriend(Long userId, Long friendId) {
 
-//        User user = userStorage.getUserById(userId);
-//        User friend = userStorage.getUserById(friendId);
         User user = getUserById(userId);
         User friend = getUserById(friendId);
 
@@ -84,16 +70,12 @@ public class UserService {
 
     public List<User> getFriends(Long userId) {
 
-        //User user = userStorage.getUserById(userId);
         User user = getUserById(userId);
 
         List<User> friends = new ArrayList<>();
 
-//        if (user.getFriends() != null) {
-            for (Long id : user.getFriends()) {
-                //friends.add(userStorage.getUserById(id));
-                friends.add(getUserById(id));
-//            }
+        for (Long id : user.getFriends()) {
+            friends.add(getUserById(id));
         }
 
         return friends;
@@ -101,8 +83,6 @@ public class UserService {
 
     public List<User> getCommonFriends(Long userId, Long anotherUserId) {
 
-//        User user = userStorage.getUserById(userId);
-//        User anotherUser = userStorage.getUserById(anotherUserId);
         User user = getUserById(userId);
         User anotherUser = getUserById(anotherUserId);
 
