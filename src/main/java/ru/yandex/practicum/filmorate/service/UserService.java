@@ -99,7 +99,6 @@ public class UserService {
         return commonFriends;
     }
 
-    
     private void checkUserName(User user) {
 
         if (user.getName() == null || user.getName().isBlank()) {
