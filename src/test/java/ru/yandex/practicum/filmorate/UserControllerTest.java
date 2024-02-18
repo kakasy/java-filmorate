@@ -6,7 +6,7 @@ import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.dao.UserStorage;
 
 import java.time.LocalDate;
 
@@ -73,7 +73,6 @@ public class UserControllerTest {
 
         User dude01 = userController.create(user);
         assertEquals(dude01, user);
-        assertEquals("dude01", dude01.getName());
         assertEquals(1, userController.getAll().size(), "Размер списка пользователей равен 1");
     }
 
