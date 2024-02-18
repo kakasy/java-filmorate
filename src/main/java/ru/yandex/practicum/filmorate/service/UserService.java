@@ -21,7 +21,7 @@ public class UserService {
     public User update(User user) {
 
         if (userStorage.getUserById(user.getId()).isEmpty()) {
-            throw new EntityNotFoundException("Пользователь с id=" + user.getId() +" не найден");
+            throw new EntityNotFoundException("Пользователь с id=" + user.getId() + " не найден");
         }
 
         return userStorage.update(user);
