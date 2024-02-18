@@ -20,7 +20,7 @@ public class FilmService {
     public Film update(Film film) {
 
         if (filmStorage.getFilmById(film.getId()).isEmpty()) {
-            throw new EntityNotFoundException("Фильм с id=" + film.getId() +" не найден");
+            throw new EntityNotFoundException("Фильм с id=" + film.getId() + " не найден");
         }
         return filmStorage.update(film);
     }
