@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
@@ -24,9 +25,9 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id) {
+    public Optional<User> getUserById(@PathVariable Long id) {
 
-        return userService.getUserById(id);
+        return Optional.of(userService.getUserById(id));
     }
 
     @GetMapping("/{id}/friends")
@@ -38,7 +39,7 @@ public class UserController {
     @GetMapping("/{id}/friends/common/{otherId}")
     public List<User> getCommonFriends(@PathVariable Long id, @PathVariable Long otherId) {
 
-        return userService.getCommonFriends(id, otherId);
+        return userService.getMutualFriends(id, otherId);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
@@ -70,9 +71,9 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public User delete(@PathVariable Long id) {
+    public void delete(@PathVariable Long id) {
 
         log.info("Получен DELETE-запрос к эндпоинту: '/users' на удаление пользователя с id={}", id);
-        return userService.delete(id);
+        userService.delete(id);
     }
 }

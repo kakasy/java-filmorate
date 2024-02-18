@@ -10,7 +10,7 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.List;
-
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/films")
@@ -28,13 +28,13 @@ public class FilmController {
     }
 
     @GetMapping("/{id}")
-    public Film getFilmById(@PathVariable Long id) {
+    public Optional<Film> getFilmById(@PathVariable Long id) {
 
-        return filmService.getFilmById(id);
+        return Optional.ofNullable(filmService.getFilmById(id));
     }
 
     @GetMapping("/popular")
-    public List<Film> getPopular(@Positive @RequestParam(name = "count", defaultValue = "10") Integer count) {
+    public List<Film> getPopular(@Positive @RequestParam(defaultValue = "10") Integer count) {
 
         return filmService.getPopular(count);
     }
@@ -45,7 +45,6 @@ public class FilmController {
 
         log.info("Получен POST-запрос к эндпоинту: '/films' на добавление фильма");
         return filmService.create(film);
-
     }
 
 
@@ -54,7 +53,6 @@ public class FilmController {
 
         log.info("Получен PUT-запрос к эндпоинту: '/films' на обновление фильма с id={}", film.getId());
         return filmService.update(film);
-
     }
 
     @PutMapping("/{id}/like/{userId}")
