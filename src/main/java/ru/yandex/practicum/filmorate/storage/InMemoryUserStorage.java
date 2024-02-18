@@ -2,9 +2,10 @@ package ru.yandex.practicum.filmorate.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.dao.UserStorage;
 
 import java.util.*;
 
@@ -42,7 +43,7 @@ public class InMemoryUserStorage implements UserStorage {
 
         } else if (!users.containsKey(user.getId())) {
 
-            throw new UserNotFoundException("Пользователь с таким id не найден");
+            throw new EntityNotFoundException("Пользователь с таким id не найден");
 
         } else {
 
@@ -59,13 +60,12 @@ public class InMemoryUserStorage implements UserStorage {
         User userToDelete = users.remove(id);
 
         if (!users.containsKey(id)) {
-            throw new UserNotFoundException("Пользователь с id=" + id + " не найден");
+            throw new EntityNotFoundException("Пользователь с id=" + id + " не найден");
         }
 
         for (User user : users.values()) {
             user.getFriends().remove(id);
         }
-
         return userToDelete;
     }
 
@@ -79,5 +79,25 @@ public class InMemoryUserStorage implements UserStorage {
     public List<User> getAll() {
 
         return new ArrayList<>(users.values());
+    }
+
+    @Override
+    public void addFriend(Long userId, Long friendId) {
+
+    }
+
+    @Override
+    public void deleteFriend(Long userId, Long friendId) {
+
+    }
+
+    @Override
+    public List<User> getMutualFriends(Long userId, Long otherUserId) {
+        return null;
+    }
+
+    @Override
+    public List<User> getFriends(Long userId) {
+        return null;
     }
 }

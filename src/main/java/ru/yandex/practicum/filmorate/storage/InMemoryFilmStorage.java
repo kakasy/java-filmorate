@@ -2,9 +2,10 @@ package ru.yandex.practicum.filmorate.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.dao.FilmStorage;
 
 import java.util.*;
 
@@ -20,7 +21,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     public Film update(Film film) {
 
         if (!films.containsKey(film.getId())) {
-            throw new FilmNotFoundException("Фильм с таким id=" + film.getId() + " не найден");
+            throw new EntityNotFoundException("Фильм с таким id=" + film.getId() + " не найден");
         }
 
         films.put(film.getId(), film);
@@ -67,5 +68,20 @@ public class InMemoryFilmStorage implements FilmStorage {
     public List<Film> getAll() {
 
         return new ArrayList<>(films.values());
+    }
+
+    @Override
+    public void addLike(Long filmId, Long userId) {
+
+    }
+
+    @Override
+    public void deleteLike(Long filmId, Long userId) {
+
+    }
+
+    @Override
+    public List<Film> getPopular(Integer count) {
+        return null;
     }
 }

@@ -1,45 +1,46 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.dao.UserStorage;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
-@RequiredArgsConstructor
 public class UserService {
 
     private final UserStorage userStorage;
 
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
+
+        this.userStorage = userStorage;
+    }
+
     public User update(User user) {
 
-        checkUserName(user);
-        return userStorage.update(user);
+        if (userStorage.getUserById(user.getId()).isEmpty()) {
+            throw new EntityNotFoundException("Пользователь с id=" + user.getId() +" не найден");
+        }
 
+        return userStorage.update(user);
     }
 
     public User create(User user) {
 
-        checkUserName(user);
         return userStorage.create(user);
-
     }
 
-    public User delete(Long userId) {
+    public void delete(Long userId) {
 
-        return  userStorage.delete(userId);
+        userStorage.delete(userId);
     }
 
     public User getUserById(Long userId) {
 
         return userStorage.getUserById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь с id=" + userId + " не найден"));
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь с id=" + userId + " не найден"));
     }
 
     public List<User> getAll() {
@@ -49,60 +50,21 @@ public class UserService {
 
     public void addFriend(Long userId, Long friendId) {
 
-        User user = getUserById(userId);
-        User friend = getUserById(friendId);
-
-        user.getFriends().add(friendId);
-        friend.getFriends().add(userId);
-
+        userStorage.addFriend(userId, friendId);
     }
 
     public void deleteFriend(Long userId, Long friendId) {
 
-        User user = getUserById(userId);
-        User friend = getUserById(friendId);
-
-        if (user.getFriends().contains(friendId)) {
-            user.getFriends().remove(friendId);
-            friend.getFriends().remove(userId);
-        }
+        userStorage.deleteFriend(userId, friendId);
     }
 
     public List<User> getFriends(Long userId) {
 
-        User user = getUserById(userId);
-
-        List<User> friends = new ArrayList<>();
-
-        for (Long id : user.getFriends()) {
-            friends.add(getUserById(id));
-        }
-
-        return friends;
+        return userStorage.getFriends(userId);
     }
 
-    public List<User> getCommonFriends(Long userId, Long anotherUserId) {
+    public List<User> getMutualFriends(Long userId, Long anotherUserId) {
 
-        User user = getUserById(userId);
-        User anotherUser = getUserById(anotherUserId);
-
-        Set<Long> commonFriendsId = new HashSet<>(user.getFriends());
-
-        commonFriendsId.retainAll(anotherUser.getFriends());
-
-        List<User> commonFriends = new ArrayList<>();
-
-        for (Long id : commonFriendsId) {
-            commonFriends.add(getUserById(id));
-        }
-
-        return commonFriends;
-    }
-
-    private void checkUserName(User user) {
-
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
+       return userStorage.getMutualFriends(userId, anotherUserId);
     }
 }
