@@ -15,7 +15,6 @@ import java.util.Set;
 /**
  * Film.
  */
-
 @Data
 @Builder
 public class Film {
@@ -35,14 +34,12 @@ public class Film {
 
     @Positive
     @NotNull
-    private int duration;
-
+    private Integer duration;
 
     private final Set<Long> likes = new HashSet<>();
 
+    @NotNull
+    private final Mpa mpa;
+    private final Set<Genre> genres = new HashSet<>();
 
-    public int getCountLikes() {
-
-        return likes.size();
-    }
 }
