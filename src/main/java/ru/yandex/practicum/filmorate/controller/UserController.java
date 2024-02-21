@@ -25,9 +25,9 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public Optional<User> getUserById(@PathVariable Long id) {
+    public User getUserById(@PathVariable Long id) {
 
-        return Optional.of(userService.getUserById(id));
+        return userService.getUserById(id);
     }
 
     @GetMapping("/{id}/friends")

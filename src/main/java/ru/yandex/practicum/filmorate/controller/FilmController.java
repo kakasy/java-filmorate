@@ -28,9 +28,9 @@ public class FilmController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Film> getFilmById(@PathVariable Long id) {
+    public Film getFilmById(@PathVariable Long id) {
 
-        return Optional.ofNullable(filmService.getFilmById(id));
+        return filmService.getFilmById(id);
     }
 
     @GetMapping("/popular")
