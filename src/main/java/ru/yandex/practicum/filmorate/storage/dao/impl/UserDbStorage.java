@@ -92,17 +92,6 @@ public class UserDbStorage implements UserStorage {
         throw new EntityNotFoundException("Пользователь с id=" + userId + " не найден");
     }
 
-    private User mapRowToUser(ResultSet rs, int rowNum) throws SQLException {
-
-        return User.builder()
-                .id(rs.getLong("user_id"))
-                .email(rs.getString("email"))
-                .login(rs.getString("login"))
-                .name(rs.getString("name"))
-                .birthday((rs.getDate("birthday")).toLocalDate())
-                .build();
-    }
-
     @Override
     public void addFriend(Long userId, Long friendId) {
 
@@ -144,6 +133,17 @@ public class UserDbStorage implements UserStorage {
         String sqlQuery = "DELETE FROM users WHERE user_id=?";
         jdbcTemplate.update(sqlQuery, userId);
         return user;
+    }
+
+    private User mapRowToUser(ResultSet rs, int rowNum) throws SQLException {
+
+        return User.builder()
+                .id(rs.getLong("user_id"))
+                .email(rs.getString("email"))
+                .login(rs.getString("login"))
+                .name(rs.getString("name"))
+                .birthday((rs.getDate("birthday")).toLocalDate())
+                .build();
     }
 }
 
