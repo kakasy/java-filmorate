@@ -24,11 +24,13 @@ public class UserService {
             throw new EntityNotFoundException("Пользователь с id=" + user.getId() + " не найден");
         }
 
+        checkUserName(user);
         return userStorage.update(user);
     }
 
     public User create(User user) {
 
+        checkUserName(user);
         return userStorage.create(user);
     }
 
@@ -66,5 +68,12 @@ public class UserService {
     public List<User> getMutualFriends(Long userId, Long anotherUserId) {
 
        return userStorage.getMutualFriends(userId, anotherUserId);
+    }
+
+
+    private void checkUserName(User user) {
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
     }
 }

@@ -40,8 +40,6 @@ public class UserDbStorage implements UserStorage {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sqlQuery = "INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?)";
 
-        checkUserName(user);
-
         jdbcTemplate.update(
                 connection -> {
                     PreparedStatement stmt =
@@ -62,8 +60,6 @@ public class UserDbStorage implements UserStorage {
     public User update(User user) {
 
         String sqlQuery = "UPDATE users SET email=?, login=?, name=?, birthday=? WHERE user_id=?";
-
-        checkUserName(user);
 
         jdbcTemplate.update(sqlQuery, user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(),
                 user.getId());
@@ -148,12 +144,6 @@ public class UserDbStorage implements UserStorage {
         String sqlQuery = "DELETE FROM users WHERE user_id=?";
         jdbcTemplate.update(sqlQuery, userId);
         return user;
-    }
-
-    private void checkUserName(User user) {
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
     }
 }
 
