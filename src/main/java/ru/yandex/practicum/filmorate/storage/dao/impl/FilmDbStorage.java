@@ -148,41 +148,6 @@ public class FilmDbStorage implements FilmStorage {
         return Optional.empty();
     }
 
-    private Film mapRowToFilm(ResultSet rs, int rowNum) throws SQLException {
-
-        Film film = Film.builder()
-                .id(rs.getLong("film_id"))
-                .name(rs.getString("name"))
-                .description(rs.getString("description"))
-                .releaseDate(rs.getDate("release_date").toLocalDate())
-                .duration(rs.getInt("duration"))
-                .mpa(new Mpa(rs.getInt("rating_id"), rs.getString("rating_name")))
-                .build();
-
-        List<Genre> genres = getFilmGenres(film.getId());
-
-        film.getGenres().addAll(genres);
-
-        return film;
-    }
-
-    private Genre mapRowToGenre(ResultSet rs, int rowNum) throws SQLException {
-
-        return new Genre(rs.getInt("genre_id"), rs.getString("name"));
-    }
-
-    private Long mapRowToLike(ResultSet rs, int rowNum) throws SQLException {
-
-        return rs.getLong("user_id");
-    }
-
-    private List<Genre> getFilmGenres(Long filmId) {
-
-        String queryForFilmGenres = "SELECT fg.film_id, fg.genre_id, g.name FROM films_genres AS fg" +
-                " JOIN genres AS g ON g.genre_id = fg.genre_id WHERE film_id=?";
-        return jdbcTemplate.query(queryForFilmGenres, this::mapRowToGenre, filmId);
-    }
-
     @Override
     public void addLike(Long filmId, Long userId) {
 
@@ -212,6 +177,36 @@ public class FilmDbStorage implements FilmStorage {
                 "GROUP BY f.film_id ORDER BY COUNT(fl.user_id) DESC LIMIT ?";
 
         return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
+    }
+
+    private Film mapRowToFilm(ResultSet rs, int rowNum) throws SQLException {
+
+        Film film = Film.builder()
+                .id(rs.getLong("film_id"))
+                .name(rs.getString("name"))
+                .description(rs.getString("description"))
+                .releaseDate(rs.getDate("release_date").toLocalDate())
+                .duration(rs.getInt("duration"))
+                .mpa(new Mpa(rs.getInt("rating_id"), rs.getString("rating_name")))
+                .build();
+
+        List<Genre> genres = getFilmGenres(film.getId());
+
+        film.getGenres().addAll(genres);
+
+        return film;
+    }
+
+    private Genre mapRowToGenre(ResultSet rs, int rowNum) throws SQLException {
+
+        return new Genre(rs.getInt("genre_id"), rs.getString("name"));
+    }
+
+    private List<Genre> getFilmGenres(Long filmId) {
+
+        String queryForFilmGenres = "SELECT fg.film_id, fg.genre_id, g.name FROM films_genres AS fg" +
+                " JOIN genres AS g ON g.genre_id = fg.genre_id WHERE film_id=?";
+        return jdbcTemplate.query(queryForFilmGenres, this::mapRowToGenre, filmId);
     }
 }
 
