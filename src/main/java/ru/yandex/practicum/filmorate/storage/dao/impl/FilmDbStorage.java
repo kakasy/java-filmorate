@@ -162,7 +162,7 @@ public class FilmDbStorage implements FilmStorage {
     public void deleteLike(Long filmId, Long userId) {
 
         Film film = getFilmById(filmId).get();
-        User user = userStorage.getUserById(userId);//.get();
+        User user = userStorage.getUserById(userId);
 
         String sqlQuery = "DELETE FROM films_likes WHERE film_id=? AND user_id=?";
         jdbcTemplate.update(sqlQuery, filmId, userId);
