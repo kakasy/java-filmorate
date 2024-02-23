@@ -5,8 +5,6 @@ import lombok.Data;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 
 @Data
@@ -27,6 +25,4 @@ public class User {
     @NotNull
     @PastOrPresent(message = "День рождения не должен быть в будущем")
     private LocalDate birthday;
-
-    private final Set<Long> friends = new HashSet<>();
 }
