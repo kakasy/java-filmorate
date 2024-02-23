@@ -38,7 +38,7 @@ public class FilmDbStorageTest {
         userStorage.create(user);
 
         // вызываем тестируемый метод
-        User savedUser = userStorage.getUserById(1L).get();
+        User savedUser = userStorage.getUserById(1L);
 
         // проверяем утверждения
         assertThat(savedUser)
