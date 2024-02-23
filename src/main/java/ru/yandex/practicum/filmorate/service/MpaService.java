@@ -6,9 +6,7 @@ import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.dao.MpaStorage;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,9 +16,7 @@ public class MpaService {
 
     public List<Mpa> getAllMpa() {
 
-        return mpaStorage.getAllMpa().stream()
-                .sorted(Comparator.comparing(Mpa::getId))
-                .collect(Collectors.toList());
+        return mpaStorage.getAllMpa();
     }
 
     public Mpa getMpaById(Integer mpaId) {
