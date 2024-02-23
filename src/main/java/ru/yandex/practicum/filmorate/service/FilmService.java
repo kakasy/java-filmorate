@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -9,13 +9,10 @@ import ru.yandex.practicum.filmorate.storage.dao.FilmStorage;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class FilmService {
 
     private final FilmStorage filmStorage;
-
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage) {
-        this.filmStorage = filmStorage;
-    }
 
     public Film update(Film film) {
 
