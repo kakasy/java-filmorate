@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -9,18 +9,14 @@ import ru.yandex.practicum.filmorate.storage.dao.UserStorage;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserStorage userStorage;
 
-    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
-
-        this.userStorage = userStorage;
-    }
-
     public User update(User user) {
 
-        if (userStorage.getUserById(user.getId()).isEmpty()) {
+        if (userStorage.getUserById(user.getId()) == null) {
             throw new EntityNotFoundException("Пользователь с id=" + user.getId() + " не найден");
         }
 
@@ -41,8 +37,7 @@ public class UserService {
 
     public User getUserById(Long userId) {
 
-        return userStorage.getUserById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Пользователь с id=" + userId + " не найден"));
+        return userStorage.getUserById(userId);
     }
 
     public List<User> getAll() {

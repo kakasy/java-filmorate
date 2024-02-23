@@ -52,7 +52,7 @@ public class UserDbStorage implements UserStorage {
                 }, keyHolder);
         user.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
 
-        return getUserById(user.getId()).get();
+        return user;
 
     }
 
@@ -63,12 +63,12 @@ public class UserDbStorage implements UserStorage {
 
         jdbcTemplate.update(sqlQuery, user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(),
                 user.getId());
-        return getUserById(user.getId()).get();
+        return user;
 
     }
 
     @Override
-    public Optional<User> getUserById(Long userId) {
+    public User getUserById(Long userId) {
 
         if (userId == null) {
             throw new ValidationException("Был передан пустой аргумент");
@@ -86,7 +86,7 @@ public class UserDbStorage implements UserStorage {
                     .birthday((Objects.requireNonNull(userRows.getDate("birthday"))).toLocalDate())
                     .build();
             log.info("Найден пользователь с id {}", userId);
-            return Optional.of(user);
+            return user;
         }
         log.info("Пользователь с id {} не найден", userId);
         throw new EntityNotFoundException("Пользователь с id=" + userId + " не найден");
@@ -95,8 +95,8 @@ public class UserDbStorage implements UserStorage {
     @Override
     public void addFriend(Long userId, Long friendId) {
 
-        User user = getUserById(userId).get();
-        User friend = getUserById(friendId).get();
+        User user = getUserById(userId);
+        User friend = getUserById(friendId);
         String sqlQuery = "INSERT INTO friends (user_id, friend_id) VALUES (?, ?)";
         jdbcTemplate.update(sqlQuery, userId, friendId);
     }
@@ -120,7 +120,7 @@ public class UserDbStorage implements UserStorage {
     @Override
     public List<User> getFriends(Long userId) {
 
-        User user = getUserById(userId).get();
+        User user = getUserById(userId);
         String sqlQuery = "SELECT * FROM users AS u WHERE u.user_id IN " +
                 "(SELECT f.friend_id FROM friends AS f WHERE f.user_id=?)";
         return jdbcTemplate.query(sqlQuery, this::mapRowToUser, userId);
@@ -129,7 +129,7 @@ public class UserDbStorage implements UserStorage {
     @Override
     public User delete(Long userId) {
 
-        User user = getUserById(userId).get();
+        User user = getUserById(userId);
         String sqlQuery = "DELETE FROM users WHERE user_id=?";
         jdbcTemplate.update(sqlQuery, userId);
         return user;
