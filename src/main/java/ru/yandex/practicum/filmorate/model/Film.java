@@ -36,8 +36,6 @@ public class Film {
     @NotNull
     private Integer duration;
 
-    private final Set<Long> likes = new HashSet<>();
-
     @NotNull
     private final Mpa mpa;
     private final Set<Genre> genres = new HashSet<>();
