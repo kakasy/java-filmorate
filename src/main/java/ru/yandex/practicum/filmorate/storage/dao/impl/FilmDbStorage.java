@@ -10,10 +10,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
-import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.dao.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.dao.UserStorage;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -27,7 +25,6 @@ import java.util.*;
 public class FilmDbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
-    private final UserStorage userStorage;
 
     @Override
     public List<Film> getAll() {
@@ -123,26 +120,6 @@ public class FilmDbStorage implements FilmStorage {
         }
         log.info("Фильм с id {} не найден", filmId);
         return Optional.empty();
-    }
-
-    @Override
-    public void addLike(Long filmId, Long userId) {
-
-        Film film = getFilmById(filmId).orElseThrow(() -> new EntityNotFoundException("Нет фильма"));
-        User user = userStorage.getUserById(userId);
-
-        String sqlQuery = "INSERT INTO films_likes (film_id, user_id) VALUES (?, ?);";
-        jdbcTemplate.update(sqlQuery, filmId, userId);
-    }
-
-    @Override
-    public void deleteLike(Long filmId, Long userId) {
-
-        Film film = getFilmById(filmId).get();
-        User user = userStorage.getUserById(userId);
-
-        String sqlQuery = "DELETE FROM films_likes WHERE film_id=? AND user_id=?";
-        jdbcTemplate.update(sqlQuery, filmId, userId);
     }
 
     @Override
