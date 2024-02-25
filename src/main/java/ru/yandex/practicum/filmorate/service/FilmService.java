@@ -1,10 +1,13 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.dao.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.dao.UserStorage;
 
 import java.util.List;
 
@@ -13,6 +16,8 @@ import java.util.List;
 public class FilmService {
 
     private final FilmStorage filmStorage;
+    private final UserStorage userStorage;
+    private final JdbcTemplate jdbcTemplate;
 
     public Film update(Film film) {
 
@@ -43,19 +48,26 @@ public class FilmService {
         return filmStorage.getAll();
     }
 
-    public void addLike(Long filmId, Long userId) {
-
-        filmStorage.addLike(filmId, userId);
-    }
-
-
-    public void deleteLike(Long filmId, Long userId) {
-
-        filmStorage.deleteLike(filmId, userId);
-    }
-
     public List<Film> getPopular(Integer count) {
 
         return filmStorage.getPopular(count);
+    }
+
+    public void addLike(Long filmId, Long userId) {
+
+        Film film = getFilmById(filmId);
+        User user = userStorage.getUserById(userId);
+
+        String sqlQuery = "INSERT INTO films_likes (film_id, user_id) VALUES (?, ?);";
+        jdbcTemplate.update(sqlQuery, filmId, userId);
+    }
+
+    public void deleteLike(Long filmId, Long userId) {
+
+        Film film = getFilmById(filmId);
+        User user = userStorage.getUserById(userId);
+
+        String sqlQuery = "DELETE FROM films_likes WHERE film_id=? AND user_id=?";
+        jdbcTemplate.update(sqlQuery, filmId, userId);
     }
 }
