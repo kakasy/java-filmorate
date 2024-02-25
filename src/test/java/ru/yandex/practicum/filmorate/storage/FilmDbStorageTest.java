@@ -61,8 +61,7 @@ public class FilmDbStorageTest {
                 .mpa(new Mpa(3, "PG-13"))
                 .build();
 
-        UserDbStorage userDbStorage = new UserDbStorage(jdbcTemplate);
-        FilmDbStorage filmDbStorage = new FilmDbStorage(jdbcTemplate, userDbStorage);
+        FilmDbStorage filmDbStorage = new FilmDbStorage(jdbcTemplate);
 
         filmDbStorage.create(film);
 
