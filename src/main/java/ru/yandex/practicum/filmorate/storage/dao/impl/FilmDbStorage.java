@@ -61,7 +61,7 @@ public class FilmDbStorage implements FilmStorage {
         }
 
 
-        return getFilmById(film.getId()).get();
+        return film;
     }
 
     @Override

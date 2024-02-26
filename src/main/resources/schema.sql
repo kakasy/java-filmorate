@@ -54,6 +54,6 @@ CREATE TABLE IF NOT EXISTS films_likes
 CREATE TABLE IF NOT EXISTS films_genres
 (
     film_id         BIGINT REFERENCES films(film_id) ON DELETE CASCADE ON UPDATE CASCADE,
-    genre_id        INTEGER REFERENCES genres(genre_id) ON DELETE RESTRICT ON UPDATE CASCADE,
+    genre_id        INTEGER REFERENCES genres(genre_id) ON DELETE CASCADE ON UPDATE CASCADE,
     PRIMARY KEY(film_id, genre_id)
 );
