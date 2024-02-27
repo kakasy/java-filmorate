@@ -91,7 +91,7 @@ public class FilmDbStorage implements FilmStorage {
             updateBatchFilmGenres(sqlQueryUpdateGenres, film, genres);
         }
 
-        return getFilmById(film.getId()).get();
+        return film;//getFilmById(film.getId()).get();
     }
 
     @Override
@@ -111,9 +111,9 @@ public class FilmDbStorage implements FilmStorage {
                     .mpa(new Mpa(filmRows.getInt("rating_id"), filmRows.getString("rating_name")))
                     .build();
 
-            List<Genre> genres = getFilmGenres(filmId);
-
-            film.getGenres().addAll(genres);
+//            List<Genre> genres = getFilmGenres(filmId);
+//
+//            film.getGenres().addAll(genres);
 
             log.info("Найден фильм с id {}", filmId);
             return Optional.of(film);
@@ -144,24 +144,24 @@ public class FilmDbStorage implements FilmStorage {
                 .mpa(new Mpa(rs.getInt("rating_id"), rs.getString("rating_name")))
                 .build();
 
-        List<Genre> genres = getFilmGenres(film.getId());
+//        List<Genre> genres = getFilmGenres(film.getId());
 
-        film.getGenres().addAll(genres);
+//        film.getGenres().addAll(genres);
 
         return film;
     }
 
-    private Genre mapRowToGenre(ResultSet rs, int rowNum) throws SQLException {
+//    private Genre mapRowToGenre(ResultSet rs, int rowNum) throws SQLException {
+//
+//        return new Genre(rs.getInt("genre_id"), rs.getString("name"));
+//    }
 
-        return new Genre(rs.getInt("genre_id"), rs.getString("name"));
-    }
-
-    private List<Genre> getFilmGenres(Long filmId) {
-
-        String queryForFilmGenres = "SELECT fg.film_id, fg.genre_id, g.name FROM films_genres AS fg" +
-                " JOIN genres AS g ON g.genre_id = fg.genre_id WHERE film_id=?";
-        return jdbcTemplate.query(queryForFilmGenres, this::mapRowToGenre, filmId);
-    }
+//    private List<Genre> getFilmGenres(Long filmId) {
+//
+//        String queryForFilmGenres = "SELECT fg.film_id, fg.genre_id, g.name FROM films_genres AS fg" +
+//                " JOIN genres AS g ON g.genre_id = fg.genre_id WHERE film_id=?";
+//        return jdbcTemplate.query(queryForFilmGenres, this::mapRowToGenre, filmId);
+//    }
 
     private void updateBatchFilmGenres(String sql, Film film, List<Genre> genres) {
 

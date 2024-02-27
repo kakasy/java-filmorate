@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.dao.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.dao.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.dao.UserStorage;
 
 import java.util.List;
@@ -18,17 +19,20 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
     private final JdbcTemplate jdbcTemplate;
+    private final GenreStorage genreStorage;
 
     public Film update(Film film) {
 
         if (filmStorage.getFilmById(film.getId()).isEmpty()) {
             throw new EntityNotFoundException("Фильм с id=" + film.getId() + " не найден");
         }
+        genreStorage.getFilmGenres(List.of(film));
         return filmStorage.update(film);
     }
 
     public Film create(Film film) {
 
+        genreStorage.getFilmGenres(List.of(film));
         return filmStorage.create(film);
     }
 

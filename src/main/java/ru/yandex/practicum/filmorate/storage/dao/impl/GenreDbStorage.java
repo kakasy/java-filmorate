@@ -5,13 +5,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.dao.GenreStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -42,6 +47,23 @@ public class GenreDbStorage implements GenreStorage {
         }
         log.info("Жанр с id {} не найден", genreId);
         return Optional.empty();
+    }
+
+    @Override
+    public void getFilmGenres(List<Film> films) {
+
+        final Map<Long, Film> filmById = films.stream().collect(Collectors.toMap(Film::getId, Function.identity()));
+
+        String inSql = String.join(",", Collections.nCopies(films.size(), "?"));
+
+        final String queryForFilmGenres = "SELECT fg.film_id, fg.genre_id, g.name FROM films_genres AS fg " +
+                "JOIN genres AS g ON g.genre_id = fg.genre_id WHERE fg.genre_id = g.genre_id AND fg.film_id IN (" + inSql + ")";
+
+        jdbcTemplate.query(queryForFilmGenres, (rs, rowNum) -> {
+            final Film film = filmById.get(rs.getLong("film_id"));
+            film.getGenres().add(new Genre(rs.getInt("genre_id"), rs.getString("name")));
+            return film;
+        }, films.stream().map(Film::getId).toArray());
     }
 
     private Genre mapRowToGenre(ResultSet rs, int rowNum) throws SQLException {
