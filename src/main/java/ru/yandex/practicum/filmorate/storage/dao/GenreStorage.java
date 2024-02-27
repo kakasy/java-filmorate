@@ -12,6 +12,8 @@ public interface GenreStorage {
 
     Optional<Genre> getGenreById(Integer genreId);
 
-    void getFilmGenres(List<Film> films);
+    void load(List<Film> films);
+
+    void updateFilmGenres(Film film);
 
 }

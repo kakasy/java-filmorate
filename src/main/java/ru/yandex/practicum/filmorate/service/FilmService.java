@@ -26,14 +26,18 @@ public class FilmService {
         if (filmStorage.getFilmById(film.getId()).isEmpty()) {
             throw new EntityNotFoundException("Фильм с id=" + film.getId() + " не найден");
         }
-        genreStorage.getFilmGenres(List.of(film));
-        return filmStorage.update(film);
+
+        filmStorage.update(film);
+        genreStorage.updateFilmGenres(film);
+
+        return film;
     }
 
     public Film create(Film film) {
 
-        genreStorage.getFilmGenres(List.of(film));
-        return filmStorage.create(film);
+        filmStorage.create(film);
+        genreStorage.updateFilmGenres(film);
+        return film;
     }
 
     public Film delete(Long filmId) {
@@ -43,13 +47,17 @@ public class FilmService {
 
     public Film getFilmById(Long filmId) {
 
-        return filmStorage.getFilmById(filmId)
+        Film film = filmStorage.getFilmById(filmId)
                 .orElseThrow(() -> new EntityNotFoundException("Фильм с id=" + filmId + " не найден"));
+        genreStorage.load(List.of(film));
+        return film;
     }
 
     public List<Film> getAll() {
 
-        return filmStorage.getAll();
+        List<Film> films = filmStorage.getAll();
+        genreStorage.load(films);
+        return films;
     }
 
     public List<Film> getPopular(Integer count) {

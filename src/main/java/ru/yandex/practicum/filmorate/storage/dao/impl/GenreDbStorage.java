@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.dao.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
@@ -9,12 +10,10 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.dao.GenreStorage;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -50,23 +49,55 @@ public class GenreDbStorage implements GenreStorage {
     }
 
     @Override
-    public void getFilmGenres(List<Film> films) {
+    public void load(List<Film> films) {
 
         final Map<Long, Film> filmById = films.stream().collect(Collectors.toMap(Film::getId, Function.identity()));
 
         String inSql = String.join(",", Collections.nCopies(films.size(), "?"));
 
-        final String queryForFilmGenres = "SELECT fg.film_id, fg.genre_id, g.name FROM films_genres AS fg " +
-                "JOIN genres AS g ON g.genre_id = fg.genre_id WHERE fg.genre_id = g.genre_id AND fg.film_id IN (" + inSql + ")";
+        final String sqlQuery = "SELECT * FROM genres AS g, films_genres AS fg" +
+                " WHERE fg.genre_id=g.genre_id AND fg.film_id IN (" + inSql + ")";
 
-        jdbcTemplate.query(queryForFilmGenres, (rs, rowNum) -> {
-            final Film film = filmById.get(rs.getLong("film_id"));
+        jdbcTemplate.query(sqlQuery, (rs, rowNum) -> {
+            Film film = filmById.get(rs.getLong("film_id"));
             film.getGenres().add(new Genre(rs.getInt("genre_id"), rs.getString("name")));
             return film;
         }, films.stream().map(Film::getId).toArray());
     }
 
+    @Override
+    public void updateFilmGenres(Film film) {
+
+        String queryForFilmGenre = "INSERT INTO films_genres (film_id, genre_id) VALUES (?, ?);";
+
+        List<Genre> genres =  new ArrayList<>(film.getGenres());
+        if (!film.getGenres().isEmpty()) {
+
+            updateBatchFilmGenres(queryForFilmGenre, film, genres);
+
+        }
+        film.getGenres().addAll(genres);
+
+    }
+
     private Genre mapRowToGenre(ResultSet rs, int rowNum) throws SQLException {
         return new Genre(rs.getInt("genre_id"), rs.getString("name"));
+    }
+
+    private void updateBatchFilmGenres(String sql, Film film, List<Genre> genres) {
+
+        jdbcTemplate.batchUpdate(sql,
+                new BatchPreparedStatementSetter() {
+                    @Override
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        ps.setLong(1, film.getId());
+                        ps.setInt(2, genres.get(i).getId());
+                    }
+
+                    @Override
+                    public int getBatchSize() {
+                        return film.getGenres().size();
+                    }
+                });
     }
 }

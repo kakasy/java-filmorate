@@ -54,11 +54,11 @@ public class FilmDbStorage implements FilmStorage {
         }, keyHolder);
 
         film.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
-
-        if (!film.getGenres().isEmpty()) {
-            List<Genre> genres =  new ArrayList<>(film.getGenres());
-            updateBatchFilmGenres(queryForFilmGenre, film, genres);
-        }
+//
+//        if (!film.getGenres().isEmpty()) {
+//            List<Genre> genres =  new ArrayList<>(film.getGenres());
+//            updateBatchFilmGenres(queryForFilmGenre, film, genres);
+//        }
 
 
         return film;
@@ -78,20 +78,19 @@ public class FilmDbStorage implements FilmStorage {
 
         String sqlQuery = "UPDATE films SET name=?, description=?, release_date=?, rating_id=?, duration=?" +
                 " WHERE film_id=?";
-        String sqlQueryToDeleteGenres = "DELETE FROM films_genres WHERE film_id=?";
+        String sqlQueryToDeleteGenres = "DELETE FROM films_genres WHERE film_id=?"; // в жанры
         String sqlQueryUpdateGenres = "INSERT INTO films_genres (film_id, genre_id) VALUES (?, ?);";
 
         jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), film.getReleaseDate(),
                 film.getMpa().getId(), film.getDuration(), film.getId());
 
-
         jdbcTemplate.update(sqlQueryToDeleteGenres, film.getId());
-        if (!film.getGenres().isEmpty()) {
-            List<Genre> genres = new ArrayList<>(film.getGenres());
-            updateBatchFilmGenres(sqlQueryUpdateGenres, film, genres);
-        }
+//        if (!film.getGenres().isEmpty()) {
+//            List<Genre> genres = new ArrayList<>(film.getGenres());
+//            updateBatchFilmGenres(sqlQueryUpdateGenres, film, genres);
+//        }
 
-        return film;//getFilmById(film.getId()).get();
+        return film;
     }
 
     @Override
@@ -145,7 +144,7 @@ public class FilmDbStorage implements FilmStorage {
                 .build();
 
 //        List<Genre> genres = getFilmGenres(film.getId());
-
+//
 //        film.getGenres().addAll(genres);
 
         return film;
