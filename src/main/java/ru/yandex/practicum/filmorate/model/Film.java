@@ -9,8 +9,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedHashSet;
 
 /**
  * Film.
@@ -38,6 +37,6 @@ public class Film {
 
     @NotNull
     private final Mpa mpa;
-    private final Set<Genre> genres = new HashSet<>();
+    private final LinkedHashSet<Genre> genres = new LinkedHashSet<>();
 
 }
