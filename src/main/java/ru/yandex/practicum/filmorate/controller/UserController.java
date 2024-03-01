@@ -38,7 +38,7 @@ public class UserController {
     @GetMapping("/{id}/friends/common/{otherId}")
     public List<User> getCommonFriends(@PathVariable Long id, @PathVariable Long otherId) {
 
-        return userService.getCommonFriends(id, otherId);
+        return userService.getMutualFriends(id, otherId);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
@@ -70,9 +70,9 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public User delete(@PathVariable Long id) {
+    public void delete(@PathVariable Long id) {
 
         log.info("Получен DELETE-запрос к эндпоинту: '/users' на удаление пользователя с id={}", id);
-        return userService.delete(id);
+        userService.delete(id);
     }
 }

@@ -1,2 +1,6 @@
 # java-filmorate
-Template repository for Filmorate project.
+
+### Модель базы данных отображена на ER-диаграмме 
+
+---
+![Модель базы данных](DB-Diagram.png)

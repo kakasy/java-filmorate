@@ -11,7 +11,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.List;
 
-
 @RestController
 @RequestMapping("/films")
 @Slf4j
@@ -34,7 +33,7 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> getPopular(@Positive @RequestParam(name = "count", defaultValue = "10") Integer count) {
+    public List<Film> getPopular(@Positive @RequestParam(defaultValue = "10") Integer count) {
 
         return filmService.getPopular(count);
     }
@@ -45,7 +44,6 @@ public class FilmController {
 
         log.info("Получен POST-запрос к эндпоинту: '/films' на добавление фильма");
         return filmService.create(film);
-
     }
 
 
@@ -54,7 +52,6 @@ public class FilmController {
 
         log.info("Получен PUT-запрос к эндпоинту: '/films' на обновление фильма с id={}", film.getId());
         return filmService.update(film);
-
     }
 
     @PutMapping("/{id}/like/{userId}")

@@ -9,13 +9,11 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedHashSet;
 
 /**
  * Film.
  */
-
 @Data
 @Builder
 public class Film {
@@ -35,14 +33,10 @@ public class Film {
 
     @Positive
     @NotNull
-    private int duration;
+    private Integer duration;
 
+    @NotNull
+    private final Mpa mpa;
+    private final LinkedHashSet<Genre> genres = new LinkedHashSet<>();
 
-    private final Set<Long> likes = new HashSet<>();
-
-
-    public int getCountLikes() {
-
-        return likes.size();
-    }
 }
